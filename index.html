@@ -12,6 +12,8 @@
 	height:500px;
 	position:relative;
 	vertical-align:middle;	
+	top:50px;
+	margin:0 auto;
 	}
 .cell{
 	background:#F0F;
@@ -27,18 +29,67 @@
 	line-height:100px;
 	overflow:hidden;
 	}
-</style>
-<style>
+	
 button{
 	width:100px;
 	height:30px;
 	font-size:18px;
 	font-weight:bolder;	
 	}
+.UP{
+	position:absolute;
+	top:-30px;
+	left:150px;
+	}
+.LEFT{
+	position:absolute;
+	top:10px;
+	left:50px;
+	}
+.DOWN{
+	position:absolute;
+	top:50px;
+	left:150px;
+	}	
+.RIGHT{
+	position:absolute;
+	top:10px;
+	left:250px;
+	}
+.buttons{position:relative;
+top:100px;
+display:block;
+left:35%;
+}
+
+html{
+	overflow-x:hidden;
+	}	
+.informations{position:absolute;top:60px;
+}
+.score{position:absolute;
+top:60px;
+right:150px;
+text-align:center}
 </style>
 </head>
 
 <body>
+
+<div class="informations"> 
+	<h1>&nbsp;2048游戏规则</h1><br />
+    <ul>
+    	<li>随机生成一个2或4，开始生成两个</li><br />
+     	<li>相邻且相同数移动相加</li><br />
+        <li>得到2048则算胜利</li><br />
+        <li>鼠标或键盘方向键操作</li>
+    </ul>
+</div>
+
+<div class="score">
+	<h2>游戏能力</h2>
+    <h3 class="mark">合成数太小,无法计算</h3>
+</div>
 
 <div class="container">
 	<div class="row">
@@ -76,6 +127,8 @@ button{
 
 <div class="informations"> </div>
 <script>
+
+clicks=0;     //初始化移动次数
 cell=document.getElementsByClassName("cell");
 tops=20;
 for(n=1;n<17;n++)          //布局16个方格
@@ -91,12 +144,12 @@ number=Array(3);
 for(n=1;n<3;n++)           //初始化
 {number[n]=Math.floor(Math.random()*15);	
 while(number[n]==number[n-1])number[n]=Math.floor(Math.random()*15);
-information=document.getElementsByClassName("informations")[0];                   //information
-information.firstChild.nodeValue=number[n]+"   "+information.firstChild.nodeValue;
+/*information=document.getElementsByClassName("informations")[0];                   //information
+information.firstChild.nodeValue=number[n]+"   "+information.firstChild.nodeValue;*/
 flags=Math.random();
 if(flags<0.5)
-	{cell[number[n]].firstChild.nodeValue="2";}
-	else{cell[number[n]].firstChild.nodeValue="4";}
+	{cell[number[n]].firstChild.nodeValue=2;}
+	else{cell[number[n]].firstChild.nodeValue=4;}
 }
 
 function newNum()  //获取新数
@@ -112,19 +165,75 @@ i--;
 number=blankCell[Math.floor(Math.random()*(i-1))+1];
 flags=Math.random();
 if(flags<0.5)
-	{cell[number].firstChild.nodeValue="2";}
-	else{cell[number].firstChild.nodeValue="4";}
+	{cell[number].firstChild.nodeValue=2;}
+	else{cell[number].firstChild.nodeValue=4;}
 
-i=0;
-flag=false;
-for(n=1;n<4;n++)
+score=Array(16);						//计分
+clicks++;	
+for(n=0;n<16;n++)
 {
-	if(cell[(n-1)+i*4].firstChild.nodeValue!==cell[n+i*4].firstChild.nodeValue){flag=true;}else{break;}
-	if(cell[(n-1)*4+i].firstChild.nodeValue!==cell[n*4+i].firstChild.nodeValue){flag=true;}else{break;}
-	i++;	
+if(cell[n].firstChild.nodeValue==" "){score[n]=0}
+	else{score[n]=parseFloat(cell[n].firstChild.nodeValue)}	
 }
-if(flag){alert("YOU　LOSE!")}
+flag=false;
+for(n=0;n<16;n++)
+{
+	if(score[n]>=16)flag=true;
 }
+if(flag){
+	for(n=0;n<15;n++)										//选择排序
+		for(i=n+1;i<16;i++)
+			if(score[n]>=score[i])
+				{
+						t=score[n];
+						score[n]=score[i];
+						score[i]=t;
+				}
+finalScore=score[15]+1/clicks;
+document.getElementsByClassName("mark")[0].lastChild.nodeValue=finalScore;
+}
+
+
+flag=false;													//空格判断
+for(n=0;n<16;n++)
+{
+	if(cell[n].firstChild.nodeValue===" ")flag=true;
+	}
+if(!flag){														//输赢判断
+	flag=false;		
+	for(n=0;n<16;n++)
+	{
+		if(cell[n].firstChild.nodeValue==2048){alert("YOU　WIN!");flag=true;}
+	}	
+		if(!flag){
+			for(i=0;i<4;i++)
+			{
+				for(n=1;n<4;n++){
+				if(cell[(n-1)+i*4].firstChild.nodeValue!==cell[n+i*4].firstChild.nodeValue){flag=true;}else{flag=false;break;}
+				if(cell[(n-1)*4+i].firstChild.nodeValue!==cell[n*4+i].firstChild.nodeValue){flag=true;}else{flag=false;break;}
+				};if(!flag)break;
+			}
+				if(flag){alert("YOU　LOSE!")}
+			}
+}
+}
+
+window.onkeydown=function(e){			//键盘控制
+	e=e||window.event;
+	var code=e.which||e.keycode;
+	switch(code)
+	{
+		case 37:left();break;	
+
+		case 38:up();break;	
+
+		case 39:right();break;	
+
+		case 40:down();break;	
+	}	
+	}
+
+
 
 function left()    //左移
 {   
