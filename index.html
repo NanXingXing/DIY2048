@@ -22,7 +22,7 @@
 	z-index:2;
 	border-radius:15px;
 	position:absolute;
-	font-size:40px;
+	font-size:60px;
 	font-weight:900;
 	text-align:center;
 	vertical-align:middle;
@@ -71,18 +71,37 @@ html{
 top:60px;
 right:150px;
 text-align:center}
+@keyframes show{
+	0%{font-size:0px}
+	30%{font-size:48px;}
+	50%{font-size:80px;}
+	100%{font-size:60px;}
+	}
+.num2{color:#FC3;}
+.num4{color:#3C3}
+.num16{color:#CF0}
+.num32{color:#633}
+.num64{color:#609}
+.num128{color:#093}
+.num256{color:#993}
+.num512{color:#CF6}
+.num1024{color:#0F9}
+.num2048{color:#F00}
+.newnum{color:#00F;animation:show 0.5s}
+.largeNum{font-size:48px}
 </style>
 </head>
 
 <body>
 
 <div class="informations"> 
-	<h1>&nbsp;2048游戏规则</h1><br />
+	<h1>&nbsp;2048游戏规则及注意事项</h1><br />
     <ul>
     	<li>随机生成一个2或4，开始生成两个</li><br />
      	<li>相邻且相同数移动相加</li><br />
         <li>得到2048则算胜利</li><br />
-        <li>鼠标或键盘方向键操作</li>
+        <li>鼠标或键盘方向键操作</li><br />
+        <li>蓝色表示新数</li>
     </ul>
 </div>
 
@@ -148,12 +167,27 @@ while(number[n]==number[n-1])number[n]=Math.floor(Math.random()*15);
 information.firstChild.nodeValue=number[n]+"   "+information.firstChild.nodeValue;*/
 flags=Math.random();
 if(flags<0.5)
-	{cell[number[n]].firstChild.nodeValue=2;}
-	else{cell[number[n]].firstChild.nodeValue=4;}
+	{cell[number[n]].firstChild.nodeValue=2;cell[number[n]].setAttribute("class","cell num2")}
+	else{cell[number[n]].firstChild.nodeValue=4;cell[number[n]].setAttribute("class","cell num4")}
 }
 
 function newNum()  //获取新数
 {
+for(n=0;n<16;n++)cell[n].setAttribute("class","cell");  //初始化class属性
+for(n=0;n<16;n++)
+{
+	switch(parseFloat(cell[n].firstChild.nodeValue))
+	{
+		case 16:	cell[n].setAttribute("class","cell num16");break;
+		case 32:	cell[n].setAttribute("class","cell num32");break;
+		case 64:	cell[n].setAttribute("class","cell num64");break;
+		case 128:	cell[n].setAttribute("class","cell num128");break;
+		case 256:	cell[n].setAttribute("class","cell num256");break;
+		case 512:	cell[n].setAttribute("class","cell num512");break;
+		case 1024:	cell[n].setAttribute("class","cell num1024 largeNum");break;
+		case 2048:	cell[n].setAttribute("class","cell num2048 largeNum");break;
+	}	
+}
 var blankCell=Array(17);
 i=1;
 for(n=1;n<17;n++)
@@ -165,8 +199,8 @@ i--;
 number=blankCell[Math.floor(Math.random()*(i-1))+1];
 flags=Math.random();
 if(flags<0.5)
-	{cell[number].firstChild.nodeValue=2;}
-	else{cell[number].firstChild.nodeValue=4;}
+	{cell[number].firstChild.nodeValue=2;cell[number].setAttribute("class","cell newnum")}
+	else{cell[number].firstChild.nodeValue=4;cell[number].setAttribute("class","cell newnum")}
 
 score=Array(16);						//计分
 clicks++;	
@@ -235,7 +269,7 @@ window.onkeydown=function(e){			//键盘控制
 
 
 
-function left()    //左移
+function left()    //左移     先移动再计算再移动
 {   
 i=1;n=1; 
 var flag=Array(6);               
@@ -252,10 +286,26 @@ if((flag[i]!=0)&&(flag[i+1]==0))
 	cell[i].firstChild.nodeValue=" ";
 	flag[i+1]=1;
 	flag[i]=0;}
+}
 for(m=1;m<4;m++)
 {
 if((cell[m-1].firstChild.nodeValue==cell[m].firstChild.nodeValue)&&(cell[m-1].firstChild.nodeValue!=" ")){cell[m-1].firstChild.nodeValue=cell[m-1].firstChild.nodeValue*2;cell[m].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[n-1].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
+}
+for(count=1;count<15;count++)
+for(i=1;i<5;i++)
+{
+if((flag[i]!=0)&&(flag[i+1]==0))
+	{cell[i-1].firstChild.nodeValue=cell[i].firstChild.nodeValue;
+	cell[i].firstChild.nodeValue=" ";
+	flag[i+1]=1;
+	flag[i]=0;}
 }
 
 i=1;n=1; 
@@ -273,10 +323,26 @@ if((flag[i]!=0)&&(flag[i+1]==0))
 	cell[i+4].firstChild.nodeValue=" ";
 	flag[i+1]=1;
 	flag[i]=0;}
+}
 for(m=1;m<4;m++)
 {
 if((cell[m-1+4].firstChild.nodeValue==cell[m+4].firstChild.nodeValue)&&(cell[m-1+4].firstChild.nodeValue!=" ")){cell[m-1+4].firstChild.nodeValue=cell[m-1+4].firstChild.nodeValue*2;cell[m+4].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[n-1+4].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
+}
+for(count=1;count<15;count++)
+for(i=1;i<5;i++)
+{
+if((flag[i]!=0)&&(flag[i+1]==0))
+	{cell[i-1+4].firstChild.nodeValue=cell[i+4].firstChild.nodeValue;
+	cell[i+4].firstChild.nodeValue=" ";
+	flag[i+1]=1;
+	flag[i]=0;}
 }
 
 i=1;n=1; 
@@ -294,10 +360,26 @@ if((flag[i]!=0)&&(flag[i+1]==0))
 	cell[i+8].firstChild.nodeValue=" ";
 	flag[i+1]=1;
 	flag[i]=0;}
+}
 for(m=1;m<4;m++)
 {
 if((cell[m-1+8].firstChild.nodeValue==cell[m+8].firstChild.nodeValue)&&(cell[m-1+8].firstChild.nodeValue!=" ")){cell[m-1+8].firstChild.nodeValue=cell[m-1+8].firstChild.nodeValue*2;cell[m+8].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[n-1+8].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
+}
+for(count=1;count<15;count++)
+for(i=1;i<5;i++)
+{
+if((flag[i]!=0)&&(flag[i+1]==0))
+	{cell[i-1+8].firstChild.nodeValue=cell[i+8].firstChild.nodeValue;
+	cell[i+8].firstChild.nodeValue=" ";
+	flag[i+1]=1;
+	flag[i]=0;}
 }
 
 i=1;n=1; 
@@ -315,11 +397,30 @@ if((flag[i]!=0)&&(flag[i+1]==0))
 	cell[i+12].firstChild.nodeValue=" ";
 	flag[i+1]=1;
 	flag[i]=0;}
+
+}
 for(m=1;m<4;m++)
 {
 if((cell[m-1+12].firstChild.nodeValue==cell[m+12].firstChild.nodeValue)&&(cell[m-1+12].firstChild.nodeValue!=" ")){cell[m-1+12].firstChild.nodeValue=cell[m-1+12].firstChild.nodeValue*2;cell[m+12].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[n-1+12].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
 }
+for(count=1;count<15;count++)
+for(i=1;i<5;i++)
+{
+if((flag[i]!=0)&&(flag[i+1]==0))
+	{cell[i-1+12].firstChild.nodeValue=cell[i+12].firstChild.nodeValue;
+	cell[i+12].firstChild.nodeValue=" ";
+	flag[i+1]=1;
+	flag[i]=0;}
+
+}
+
 newNum();
 }
 
@@ -340,11 +441,30 @@ if((flag[i]!=0)&&(flag[i-1]==0))
 	cell[i-2].firstChild.nodeValue=" ";
 	flag[i-1]=1;
 	flag[i]=0;}
+
+}
 for(m=4;m>1;m--)
 {
 if((cell[m-1].firstChild.nodeValue==cell[m-2].firstChild.nodeValue)&&(cell[m-1].firstChild.nodeValue!=" ")){cell[m-1].firstChild.nodeValue=cell[m-1].firstChild.nodeValue*2;cell[m-2].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[n-1].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
 }
+for(count=1;count<15;count++)
+for(i=4;i>0;i--)
+{
+if((flag[i]!=0)&&(flag[i-1]==0))
+	{cell[i-1].firstChild.nodeValue=cell[i-2].firstChild.nodeValue;
+	cell[i-2].firstChild.nodeValue=" ";
+	flag[i-1]=1;
+	flag[i]=0;}
+
+}
+
 
 i=1;n=1; 
 var flag=Array(6);               
@@ -361,10 +481,28 @@ if((flag[i]!=0)&&(flag[i-1]==0))
 	cell[i-2+4].firstChild.nodeValue=" ";
 	flag[i-1]=1;
 	flag[i]=0;}
+
+}
 for(m=4;m>1;m--)
 {
 if((cell[m-1+4].firstChild.nodeValue==cell[m-2+4].firstChild.nodeValue)&&(cell[m-1+4].firstChild.nodeValue!=" ")){cell[m-1+4].firstChild.nodeValue=cell[m-1+4].firstChild.nodeValue*2;cell[m-2+4].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[n-1+4].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
+}
+for(count=1;count<15;count++)
+for(i=4;i>0;i--)
+{
+if((flag[i]!=0)&&(flag[i-1]==0))
+	{cell[i-1+4].firstChild.nodeValue=cell[i-2+4].firstChild.nodeValue;
+	cell[i-2+4].firstChild.nodeValue=" ";
+	flag[i-1]=1;
+	flag[i]=0;}
+
 }
 
 i=1;n=1; 
@@ -382,10 +520,28 @@ if((flag[i]!=0)&&(flag[i-1]==0))
 	cell[i-2+12].firstChild.nodeValue=" ";
 	flag[i-1]=1;
 	flag[i]=0;}
+
+}
 for(m=4;m>1;m--)
 {
 if((cell[m-1+12].firstChild.nodeValue==cell[m-2+12].firstChild.nodeValue)&&(cell[m-1+12].firstChild.nodeValue!=" ")){cell[m-1+12].firstChild.nodeValue=cell[m-1+12].firstChild.nodeValue*2;cell[m-2+12].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[n-1+12].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
+}
+for(count=1;count<15;count++)
+for(i=4;i>0;i--)
+{
+if((flag[i]!=0)&&(flag[i-1]==0))
+	{cell[i-1+12].firstChild.nodeValue=cell[i-2+12].firstChild.nodeValue;
+	cell[i-2+12].firstChild.nodeValue=" ";
+	flag[i-1]=1;
+	flag[i]=0;}
+
 }
 
 i=1;n=1; 
@@ -403,11 +559,30 @@ if((flag[i]!=0)&&(flag[i-1]==0))
 	cell[i-2+8].firstChild.nodeValue=" ";
 	flag[i-1]=1;
 	flag[i]=0;}
+
+}
 for(m=4;m>1;m--)
 {
 if((cell[m-1+8].firstChild.nodeValue==cell[m-2+8].firstChild.nodeValue)&&(cell[m-1+8].firstChild.nodeValue!=" ")){cell[m-1+8].firstChild.nodeValue=cell[m-1+8].firstChild.nodeValue*2;cell[m-2+8].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[n-1+8].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
 }
+for(count=1;count<15;count++)
+for(i=4;i>0;i--)
+{
+if((flag[i]!=0)&&(flag[i-1]==0))
+	{cell[i-1+8].firstChild.nodeValue=cell[i-2+8].firstChild.nodeValue;
+	cell[i-2+8].firstChild.nodeValue=" ";
+	flag[i-1]=1;
+	flag[i]=0;}
+
+}
+
 newNum();
 }
 
@@ -428,10 +603,28 @@ if((flag[i]!=0)&&(flag[i-1]==0))
 	cell[(i-2)*4].firstChild.nodeValue=" ";
 	flag[i-1]=1;
 	flag[i]=0;}
+
+}
 for(m=4;m>1;m--)
 {
 if((cell[(m-1)*4].firstChild.nodeValue==cell[(m-2)*4].firstChild.nodeValue)&&(cell[(m-1)*4].firstChild.nodeValue!=" ")){cell[(m-1)*4].firstChild.nodeValue=cell[(m-1)*4].firstChild.nodeValue*2;cell[(m-2)*4].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[(n-1)*4].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
+}
+for(count=1;count<15;count++)
+for(i=4;i>0;i--)
+{
+if((flag[i]!=0)&&(flag[i-1]==0))
+	{cell[(i-1)*4].firstChild.nodeValue=cell[(i-2)*4].firstChild.nodeValue;
+	cell[(i-2)*4].firstChild.nodeValue=" ";
+	flag[i-1]=1;
+	flag[i]=0;}
+
 }
 
 i=1;n=1; 
@@ -449,10 +642,28 @@ if((flag[i]!=0)&&(flag[i-1]==0))
 	cell[(i-2)*4+1].firstChild.nodeValue=" ";
 	flag[i-1]=1;
 	flag[i]=0;}
+
+}
 for(m=4;m>1;m--)
 {
 if((cell[(m-1)*4+1].firstChild.nodeValue==cell[(m-2)*4+1].firstChild.nodeValue)&&(cell[(m-1)*4+1].firstChild.nodeValue!=" ")){cell[(m-1)*4+1].firstChild.nodeValue=cell[(m-1)*4+1].firstChild.nodeValue*2;cell[(m-2)*4+1].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[(n-1)*4+1].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
+}
+for(count=1;count<15;count++)
+for(i=4;i>0;i--)
+{
+if((flag[i]!=0)&&(flag[i-1]==0))
+	{cell[(i-1)*4+1].firstChild.nodeValue=cell[(i-2)*4+1].firstChild.nodeValue;
+	cell[(i-2)*4+1].firstChild.nodeValue=" ";
+	flag[i-1]=1;
+	flag[i]=0;}
+
 }
 
 i=1;n=1; 
@@ -470,10 +681,28 @@ if((flag[i]!=0)&&(flag[i-1]==0))
 	cell[(i-2)*4+2].firstChild.nodeValue=" ";
 	flag[i-1]=1;
 	flag[i]=0;}
+
+}
 for(m=4;m>1;m--)
 {
 if((cell[(m-1)*4+2].firstChild.nodeValue==cell[(m-2)*4+2].firstChild.nodeValue)&&(cell[(m-1)*4+2].firstChild.nodeValue!=" ")){cell[(m-1)*4+2].firstChild.nodeValue=cell[(m-1)*4+2].firstChild.nodeValue*2;cell[(m-2)*4+2].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[(n-1)*4+2].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
+}
+for(count=1;count<15;count++)
+for(i=4;i>0;i--)
+{
+if((flag[i]!=0)&&(flag[i-1]==0))
+	{cell[(i-1)*4+2].firstChild.nodeValue=cell[(i-2)*4+2].firstChild.nodeValue;
+	cell[(i-2)*4+2].firstChild.nodeValue=" ";
+	flag[i-1]=1;
+	flag[i]=0;}
+
 }
 
 i=1;n=1; 
@@ -491,11 +720,30 @@ if((flag[i]!=0)&&(flag[i-1]==0))
 	cell[(i-2)*4+3].firstChild.nodeValue=" ";
 	flag[i-1]=1;
 	flag[i]=0;}
+
+}
 for(m=4;m>1;m--)
 {
 if((cell[(m-1)*4+3].firstChild.nodeValue==cell[(m-2)*4+3].firstChild.nodeValue)&&(cell[(m-1)*4+3].firstChild.nodeValue!=" ")){cell[(m-1)*4+3].firstChild.nodeValue=cell[(m-1)*4+3].firstChild.nodeValue*2;cell[(m-2)*4+3].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[(n-1)*4+3].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
 }
+for(count=1;count<15;count++)
+for(i=4;i>0;i--)
+{
+if((flag[i]!=0)&&(flag[i-1]==0))
+	{cell[(i-1)*4+3].firstChild.nodeValue=cell[(i-2)*4+3].firstChild.nodeValue;
+	cell[(i-2)*4+3].firstChild.nodeValue=" ";
+	flag[i-1]=1;
+	flag[i]=0;}
+
+}
+
 newNum();
 }
 
@@ -516,10 +764,28 @@ if((flag[i]!=0)&&(flag[i+1]==0))
 	cell[i*4].firstChild.nodeValue=" ";
 	flag[i+1]=1;
 	flag[i]=0;}
+
+}
 for(m=1;m<4;m++)
 {
 if((cell[(m-1)*4].firstChild.nodeValue==cell[m*4].firstChild.nodeValue)&&(cell[(m-1)*4].firstChild.nodeValue!=" ")){cell[(m-1)*4].firstChild.nodeValue=cell[(m-1)*4].firstChild.nodeValue*2;cell[m*4].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[(n-1)*4].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
+}
+for(count=1;count<15;count++)
+for(i=1;i<5;i++)
+{
+if((flag[i]!=0)&&(flag[i+1]==0))
+	{cell[(i-1)*4].firstChild.nodeValue=cell[i*4].firstChild.nodeValue;
+	cell[i*4].firstChild.nodeValue=" ";
+	flag[i+1]=1;
+	flag[i]=0;}
+
 }
 
 i=1;n=1; 
@@ -537,10 +803,28 @@ if((flag[i]!=0)&&(flag[i+1]==0))
 	cell[i*4+1].firstChild.nodeValue=" ";
 	flag[i+1]=1;
 	flag[i]=0;}
+
+}
 for(m=1;m<4;m++)
 {
 if((cell[(m-1)*4+1].firstChild.nodeValue==cell[m*4+1].firstChild.nodeValue)&&(cell[(m-1)*4+1].firstChild.nodeValue!=" ")){cell[(m-1)*4+1].firstChild.nodeValue=cell[(m-1)*4+1].firstChild.nodeValue*2;cell[m*4+1].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[(n-1)*4+1].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
+}
+for(count=1;count<15;count++)
+for(i=1;i<5;i++)
+{
+if((flag[i]!=0)&&(flag[i+1]==0))
+	{cell[(i-1)*4+1].firstChild.nodeValue=cell[i*4+1].firstChild.nodeValue;
+	cell[i*4+1].firstChild.nodeValue=" ";
+	flag[i+1]=1;
+	flag[i]=0;}
+
 }
 
 i=1;n=1; 
@@ -558,10 +842,28 @@ if((flag[i]!=0)&&(flag[i+1]==0))
 	cell[i*4+2].firstChild.nodeValue=" ";
 	flag[i+1]=1;
 	flag[i]=0;}
+
+}
 for(m=1;m<4;m++)
 {
 if((cell[(m-1)*4+2].firstChild.nodeValue==cell[m*4+2].firstChild.nodeValue)&&(cell[(m-1)*4+2].firstChild.nodeValue!=" ")){cell[(m-1)*4+2].firstChild.nodeValue=cell[(m-1)*4+2].firstChild.nodeValue*2;cell[m*4+2].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[(n-1)*4+2].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
+}
+for(count=1;count<15;count++)
+for(i=1;i<5;i++)
+{
+if((flag[i]!=0)&&(flag[i+1]==0))
+	{cell[(i-1)*4+2].firstChild.nodeValue=cell[i*4+2].firstChild.nodeValue;
+	cell[i*4+2].firstChild.nodeValue=" ";
+	flag[i+1]=1;
+	flag[i]=0;}
+
 }
 
 i=1;n=1; 
@@ -579,10 +881,28 @@ if((flag[i]!=0)&&(flag[i+1]==0))
 	cell[i*4+3].firstChild.nodeValue=" ";
 	flag[i+1]=1;
 	flag[i]=0;}
+
+}
 for(m=1;m<4;m++)
 {
 if((cell[(m-1)*4+3].firstChild.nodeValue==cell[m*4+3].firstChild.nodeValue)&&(cell[(m-1)*4+3].firstChild.nodeValue!=" ")){cell[(m-1)*4+3].firstChild.nodeValue=cell[(m-1)*4+3].firstChild.nodeValue*2;cell[m*4+3].firstChild.nodeValue=" ";}	
 }
+i=1;n=1; 
+var flag=Array(6);               
+for(n=1;n<5;n++)
+{
+cellValue=cell[(n-1)*4+3].firstChild.nodeValue;
+if(cellValue==" "){flag[i]=1;i++;}else{flag[i]=0;i++;};
+}
+for(count=1;count<15;count++)
+for(i=1;i<5;i++)
+{
+if((flag[i]!=0)&&(flag[i+1]==0))
+	{cell[(i-1)*4+3].firstChild.nodeValue=cell[i*4+3].firstChild.nodeValue;
+	cell[i*4+3].firstChild.nodeValue=" ";
+	flag[i+1]=1;
+	flag[i]=0;}
+
 }
 
 newNum();
